@@ -8,7 +8,7 @@ package fr.insa.beuvron.cours.multiTache.pasapasge5.electifs.model;
 import java.util.Objects;
 
 /**
- *
+ * 
  * @author francois
  */
 public class Module {

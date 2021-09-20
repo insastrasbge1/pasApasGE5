@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- *
+ * 
  * @author francois
  */
 public class CoutInscriptionEtudiantModule {

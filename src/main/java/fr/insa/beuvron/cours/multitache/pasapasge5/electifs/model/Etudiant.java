@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.insa.beuvron.cours.multitache.pasapasge5.electifs.model;
+package fr.insa.beuvron.cours.multiTache.pasapasge5.electifs.model;
+
+import java.util.Objects;
 
 /**
  *
@@ -33,16 +35,38 @@ public class Etudiant {
         return prenom;
     }
 
-    /**
-     * @param prenom the prenom to set
-     */
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
     @Override
     public String toString() {
         return "Etudiant{" + "nom=" + nom + ", prenom=" + prenom + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this.nom);
+        hash = 97 * hash + Objects.hashCode(this.prenom);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Etudiant other = (Etudiant) obj;
+        if (!Objects.equals(this.nom, other.nom)) {
+            return false;
+        }
+        if (!Objects.equals(this.prenom, other.prenom)) {
+            return false;
+        }
+        return true;
     }
     
     

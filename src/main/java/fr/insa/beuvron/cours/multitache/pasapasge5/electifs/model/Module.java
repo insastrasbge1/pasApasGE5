@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.insa.beuvron.cours.multitache.pasapasge5.electifs.model;
+package fr.insa.beuvron.cours.multiTache.pasapasge5.electifs.model;
+
+import java.util.Objects;
 
 /**
  *
@@ -43,6 +45,31 @@ public class Module {
     @Override
     public String toString() {
         return "Module{" + "intitule=" + intitule + ", nbrPlace=" + nbrPlace + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.intitule);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Module other = (Module) obj;
+        if (!Objects.equals(this.intitule, other.intitule)) {
+            return false;
+        }
+        return true;
     }
     
     

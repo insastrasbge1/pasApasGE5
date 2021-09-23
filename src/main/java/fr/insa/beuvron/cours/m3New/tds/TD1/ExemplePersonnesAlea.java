@@ -21,6 +21,7 @@ package fr.insa.beuvron.cours.m3New.tds.TD1;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Personnes "aléatoires" générées sur https://www.fakenamegenerator.com. pour
@@ -140,13 +141,13 @@ public class ExemplePersonnesAlea {
     public static List<String> nomsAlea() {
         return Arrays.stream(PERSONNES_ALEA).map((t) -> {
             return t[2];
-        }).unordered().distinct().toList();
+        }).unordered().distinct().collect(Collectors.toList());
     }
 
     public static List<String> prenomsAlea() {
         return Arrays.stream(PERSONNES_ALEA).map((t) -> {
             return t[1];
-        }).unordered().distinct().toList();
+        }).unordered().distinct().collect(Collectors.toList());
     }
 
 }

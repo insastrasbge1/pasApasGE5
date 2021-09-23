@@ -16,29 +16,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.insa.beuvron.cours.multiTache.pasapasge5.lambdas;
+package fr.insa.beuvron.cours.multitache.pAp.lambdas;
 
 /**
- * 
+ *  
  * @author francois
  */
-public class MyRun implements Runnable{
-    
-    private String nom ;
-    private int nbrIter;
-    
-     public MyRun(String nom,int nbrIter) {
-        this.nom = nom;
-        this.nbrIter = nbrIter;
-    }
-    
-    
+public class RunnerV1 {
 
-    @Override
-    public void run() {
-        for(int i = 0 ; i < this.nbrIter ; i ++) {
-            System.out.println(this.nom + " : " +i);
+    public static void runPara(int nbrThread, int nbrIter) {
+
+        for (int i = 0; i < nbrThread; i++) {
+            MyRun r = new MyRun("T"+i,10*i);
+            Thread t = new Thread(r);
+            t.start();
+                    
         }
     }
     
+    public static void main(String[] args) {
+        runPara(5, 1000);
+    }
+
 }

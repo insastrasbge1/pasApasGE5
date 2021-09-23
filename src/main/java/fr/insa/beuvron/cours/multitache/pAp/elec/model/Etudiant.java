@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.insa.beuvron.cours.multiTache.pasapasge5.electifs.model;
+package fr.insa.beuvron.cours.multitache.pAp.elec.model;
 
 import java.util.Objects;
 

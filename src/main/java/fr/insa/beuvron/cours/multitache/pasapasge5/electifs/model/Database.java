@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- *  
+ *  v2
  * @author francois
  */
 public class Database {

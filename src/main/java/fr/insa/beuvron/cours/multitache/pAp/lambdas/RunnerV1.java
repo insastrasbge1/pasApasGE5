@@ -19,7 +19,7 @@ along with CoursBeuvron.  If not, see <http://www.gnu.org/licenses/>.
 package fr.insa.beuvron.cours.multitache.pAp.lambdas;
 
 /**
- *  
+ *  test GIT
  * @author francois
  */
 public class RunnerV1 {

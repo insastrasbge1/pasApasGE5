@@ -23,11 +23,20 @@ package fr.insa.beuvron.cours.multitache.pAp.lambdas;
  * @author francois
  */
 public class RunnerV1 {
+    
+    private int nbrThread;
+    private long nbrIter;
 
-    public static void runPara(int nbrThread, int nbrIter) {
+    public RunnerV1(int nbrThread, long nbrIter) {
+        this.nbrThread = nbrThread;
+        this.nbrIter = nbrIter;
+    }
 
-        for (int i = 0; i < nbrThread; i++) {
-            MyRun r = new MyRun("T"+i,10*i);
+    
+    public void runPara() {
+
+        for (int i = 0; i < this.nbrThread; i++) {
+            MyRun r = new MyRun("T"+i,this.nbrIter);
             Thread t = new Thread(r);
             t.start();
                     
@@ -35,7 +44,8 @@ public class RunnerV1 {
     }
     
     public static void main(String[] args) {
-        runPara(5, 1000);
+        RunnerV1 run = new RunnerV1(5, 10);
+        run.runPara();
     }
 
 }

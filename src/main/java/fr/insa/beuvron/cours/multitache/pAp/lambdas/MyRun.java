@@ -25,9 +25,9 @@ package fr.insa.beuvron.cours.multitache.pAp.lambdas;
 public class MyRun implements Runnable{
     
     private String nom ;
-    private int nbrIter;
+    private long nbrIter;
     
-     public MyRun(String nom,int nbrIter) {
+     public MyRun(String nom,long nbrIter) {
         this.nom = nom;
         this.nbrIter = nbrIter;
     }
@@ -36,7 +36,7 @@ public class MyRun implements Runnable{
 
     @Override
     public void run() {
-        for(int i = 0 ; i < this.nbrIter ; i ++) {
+        for(long i = 0 ; i < this.nbrIter ; i ++) {
             System.out.println(this.nom + " : " +i);
         }
     }

@@ -26,7 +26,7 @@ import java.util.Arrays;
  */
 public class TriSequentiel {
 
-    public static int SIZE = 1000000;
+    public static int SIZE = 100000;
     public static int BMAX = 5000;
 
     public static void tri(int[] tab) {
@@ -108,7 +108,7 @@ public class TriSequentiel {
     }
 
     public static void main(String[] args) {
-        test(10000000,TriSequentiel.BMAX);
+        test(TriSequentiel.SIZE,TriSequentiel.BMAX);
     }
 
 }

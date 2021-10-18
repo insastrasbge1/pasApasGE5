@@ -21,19 +21,27 @@ package fr.insa.beuvron.cours.multiTache.exemplesCours.trie;
 import java.util.Arrays;
 
 /**
- *
+ * Même chose que la version séquentielle, mais on a mis les paramètres du tri
+ * borné comme attribut de la classe.
+ * C'est une étape vers la programmation parallèle avec des Threads où la 
+ * méthode run() n'a pas de paramètres : les paramètres doivent donc être
+ * défini comme attributs d'une classe implémentant l'interface Runnable
+ * (ou sous-classe de Thread)
  * @author francois
  */
-public class TriSequentiel {
+public class TriSequentielObjet {
 
-    public static int SIZE = 100000000;
-    public static int BMAX = 5000;
+    private int[] tab;
+    private int min;
+    private int max;
 
-    public static void tri(int[] tab) {
-        triBorne(tab, 0, tab.length - 1);
+    public TriSequentielObjet(int[] tab, int min, int max) {
+        this.tab = tab;
+        this.min = min;
+        this.max = max;
     }
 
-    public static void triBorne(int[] tab, int min, int max) {
+    public void tri() {
 //        System.out.println("sorting " + Arrays.toString(tab) + " between " + min + " and " + max);
         if (max - min < 2) {
             if (tab[min] > tab[max]) {
@@ -43,14 +51,16 @@ public class TriSequentiel {
             }
         } else {
             int milieu = (max + min) / 2;
-            triBorne(tab, min, milieu);
-            triBorne(tab, milieu + 1, max);
-            fusion(tab, min, max);
+            TriSequentielObjet inf = new TriSequentielObjet(tab, min, milieu);
+            TriSequentielObjet sup = new TriSequentielObjet(tab, milieu+1, max);
+            inf.tri();
+            sup.tri();
+            fusion();
         }
 //        System.out.println("sorted " + Arrays.toString(tab) + " between " + min + " and " + max);
     }
 
-    private static void fusion(int[] tab, int min, int max) {
+    private void fusion() {
         int[] fu = new int[max - min + 1];
         int milieu = (max + min) / 2;
         int cur1 = min;
@@ -77,30 +87,13 @@ public class TriSequentiel {
         }
     }
 
-    public static boolean testTrie(int[] tab) {
-        boolean res = true;
-        int i = 0;
-        while (res && i < tab.length - 1) {
-            res = tab[i] <= tab[i + 1];
-            i++;
-        }
-        return res;
-    }
-
-    public static int[] tabAlea(int size, int borneMax) {
-        int[] res = new int[size];
-        for (int i = 0; i < res.length; i++) {
-            res[i] = (int) (Math.random() * borneMax);
-        }
-        return res;
-    }
-
     public static void test(int size,int bmax) {
         int[] t = TriSequentiel.tabAlea(size,bmax);
         System.out.println("trie tableau taille : " + size
                 + " (0 <= e < " + bmax + ")");
         long deb = System.currentTimeMillis();
-        tri(t);
+        TriSequentielObjet to = new TriSequentielObjet(t, 0, t.length-1);
+        to.tri();
         long duree = System.currentTimeMillis() - deb;
         System.out.println("test : " + TriSequentiel.testTrie(t));
         System.out.println("in " + duree + " ms");
@@ -108,7 +101,8 @@ public class TriSequentiel {
     }
 
     public static void main(String[] args) {
-        test(10000000,TriSequentiel.BMAX);
+        test(TriSequentiel.SIZE,TriSequentiel.BMAX);
     }
 
+ 
 }

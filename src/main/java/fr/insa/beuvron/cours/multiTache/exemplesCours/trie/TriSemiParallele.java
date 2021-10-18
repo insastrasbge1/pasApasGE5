@@ -18,39 +18,55 @@
  */
 package fr.insa.beuvron.cours.multiTache.exemplesCours.trie;
 
-import java.util.Arrays;
-
 /**
- *
+ * La version totalement parallèle (voir TriParallele) va lancer des 
+ * "sous-Thread" de façon récursive jusqu'à ce qu'il n'y ai plus que 2 cases
+ * à trier.
+ * Cela abouti à un programme TRES inéficace, car la programme passe plus de
+ * temps à créer et gérer les très nombreux Thread que de faire des calculs
+ * à l'intérieur des Thread.
+ * Pour que la parallélisation apporte un gain de temps, il faut que chaque 
+ * Thread fasse "assez de boulot" pour justifier sa création.
+ * Ici, s'il y a moins de MIN_PARALLELE cases à trier (et non plus 2 comme
+ * auparavent), on revient à un tri séquentiel.
  * @author francois
  */
-public class TriSequentiel {
+public class TriSemiParallele extends Thread {
 
-    public static int SIZE = 100000000;
-    public static int BMAX = 5000;
+    public static final int MIN_PARALLELE = 10000;
 
-    public static void tri(int[] tab) {
-        triBorne(tab, 0, tab.length - 1);
+    private int[] tab;
+    private int min;
+    private int max;
+
+    public TriSemiParallele(int[] tab, int min, int max) {
+        this.tab = tab;
+        this.min = min;
+        this.max = max;
     }
 
-    public static void triBorne(int[] tab, int min, int max) {
+    public void run() {
 //        System.out.println("sorting " + Arrays.toString(tab) + " between " + min + " and " + max);
-        if (max - min < 2) {
-            if (tab[min] > tab[max]) {
-                int temp = tab[min];
-                tab[min] = tab[max];
-                tab[max] = temp;
-            }
+        if (max - min < MIN_PARALLELE) {
+            TriSequentiel.triBorne(tab, min, max);
         } else {
             int milieu = (max + min) / 2;
-            triBorne(tab, min, milieu);
-            triBorne(tab, milieu + 1, max);
-            fusion(tab, min, max);
+            TriSemiParallele inf = new TriSemiParallele(tab, min, milieu);
+            TriSemiParallele sup = new TriSemiParallele(tab, milieu + 1, max);
+            inf.start();
+            sup.start();
+            try {
+                inf.join();
+                sup.join();
+            } catch (InterruptedException ex) {
+                throw new Error("ne doit pas arriver");
+            }
+            fusion();
         }
 //        System.out.println("sorted " + Arrays.toString(tab) + " between " + min + " and " + max);
     }
 
-    private static void fusion(int[] tab, int min, int max) {
+    private void fusion() {
         int[] fu = new int[max - min + 1];
         int milieu = (max + min) / 2;
         int cur1 = min;
@@ -77,7 +93,7 @@ public class TriSequentiel {
         }
     }
 
-    public static boolean testTrie(int[] tab) {
+    public boolean testTrie() {
         boolean res = true;
         int i = 0;
         while (res && i < tab.length - 1) {
@@ -100,15 +116,21 @@ public class TriSequentiel {
         System.out.println("trie tableau taille : " + size
                 + " (0 <= e < " + bmax + ")");
         long deb = System.currentTimeMillis();
-        tri(t);
+        TriSemiParallele tp = new TriSemiParallele(t, 0, t.length - 1);
+        tp.start();
+        try {
+            tp.join();
+        } catch (InterruptedException ex) {
+            throw new Error("ne doit pas arriver");
+        }
         long duree = System.currentTimeMillis() - deb;
         System.out.println("test : " + TriSequentiel.testTrie(t));
         System.out.println("in " + duree + " ms");
 
     }
 
-    public static void main(String[] args) {
-        test(10000000,TriSequentiel.BMAX);
+     public static void main(String[] args) {
+        test(TriSequentiel.SIZE,TriSequentiel.BMAX);
     }
 
 }

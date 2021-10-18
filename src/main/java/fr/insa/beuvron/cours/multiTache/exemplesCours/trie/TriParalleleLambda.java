@@ -19,15 +19,18 @@
 package fr.insa.beuvron.cours.multiTache.exemplesCours.trie;
 
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
+ * Tri récursif parallèle. Les Threads sont définis ici avec des lambda expression
+ * (ce serait la même chose avec une syntaxe un peu plus lourde en utilisant
+ * des classes locales).
+ * Cela permet de garder la structure quasiment identique à celle de la version
+ * séquentielle.
  * @author francois
  */
-public class TriSequentiel {
-
-    public static int SIZE = 100000000;
-    public static int BMAX = 5000;
+public class TriParalleleLambda {
 
     public static void tri(int[] tab) {
         triBorne(tab, 0, tab.length - 1);
@@ -43,8 +46,22 @@ public class TriSequentiel {
             }
         } else {
             int milieu = (max + min) / 2;
-            triBorne(tab, min, milieu);
-            triBorne(tab, milieu + 1, max);
+            Thread tInf = new Thread(() -> {
+                triBorne(tab, min, milieu);
+            });
+            Thread tSupp = new Thread(() -> {
+                triBorne(tab, milieu + 1, max);
+            });
+            tInf.start();
+            tSupp.start();
+            
+            try {
+                tInf.join();
+                tSupp.join();
+            } catch (InterruptedException ex) {
+                throw new Error(ex);
+            }
+
             fusion(tab, min, max);
         }
 //        System.out.println("sorted " + Arrays.toString(tab) + " between " + min + " and " + max);
@@ -95,20 +112,20 @@ public class TriSequentiel {
         return res;
     }
 
-    public static void test(int size,int bmax) {
-        int[] t = TriSequentiel.tabAlea(size,bmax);
+    public static void test(int size, int bmax) {
+        int[] t = TriParalleleLambda.tabAlea(size, bmax);
         System.out.println("trie tableau taille : " + size
                 + " (0 <= e < " + bmax + ")");
         long deb = System.currentTimeMillis();
         tri(t);
         long duree = System.currentTimeMillis() - deb;
-        System.out.println("test : " + TriSequentiel.testTrie(t));
+        System.out.println("test : " + TriParalleleLambda.testTrie(t));
         System.out.println("in " + duree + " ms");
 
     }
 
     public static void main(String[] args) {
-        test(10000000,TriSequentiel.BMAX);
+        test(1000, TriSequentiel.BMAX);
     }
 
 }

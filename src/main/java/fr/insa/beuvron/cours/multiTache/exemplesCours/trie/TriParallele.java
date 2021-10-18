@@ -18,22 +18,32 @@
  */
 package fr.insa.beuvron.cours.multiTache.exemplesCours.trie;
 
-import java.util.Arrays;
-
 /**
- *
+ * Tri parallele.
+ * On aurait pu aussi avec une classe qui implémente seulement l'interface
+ * Runnable. Ici, on en a fait une sous-classe de Thread.
+ * La méthode run() est l'équivalent de la méthode triBorne de la classe
+ * TriSequentiel. Comme la méthode run() d'un Runnable n'a pas de paramètre,
+ * on place ceux-ci comme attribut de la classe qui sont initialisé lors de 
+ * la création du Thread. Puis seulement on lance effectivement le calcul
+ * en parallèle avec la méthode start() de Thread.
+ * Notez qu'il faut attendre (join) que les tris des deux moitiées soit finis
+ * avant de lancer la fusion.
  * @author francois
  */
-public class TriSequentiel {
+public class TriParallele extends Thread {
 
-    public static int SIZE = 100000000;
-    public static int BMAX = 5000;
+    private int[] tab;
+    private int min;
+    private int max;
 
-    public static void tri(int[] tab) {
-        triBorne(tab, 0, tab.length - 1);
+    public TriParallele(int[] tab, int min, int max) {
+        this.tab = tab;
+        this.min = min;
+        this.max = max;
     }
 
-    public static void triBorne(int[] tab, int min, int max) {
+    public void run() {
 //        System.out.println("sorting " + Arrays.toString(tab) + " between " + min + " and " + max);
         if (max - min < 2) {
             if (tab[min] > tab[max]) {
@@ -43,14 +53,22 @@ public class TriSequentiel {
             }
         } else {
             int milieu = (max + min) / 2;
-            triBorne(tab, min, milieu);
-            triBorne(tab, milieu + 1, max);
-            fusion(tab, min, max);
+            TriParallele inf = new TriParallele(tab, min, milieu);
+            TriParallele sup = new TriParallele(tab, milieu + 1, max);
+            inf.start();
+            sup.start();
+            try {
+                inf.join();
+                sup.join();
+            } catch (InterruptedException ex) {
+                throw new Error("ne doit pas arriver");
+            }
+            fusion();
         }
 //        System.out.println("sorted " + Arrays.toString(tab) + " between " + min + " and " + max);
     }
 
-    private static void fusion(int[] tab, int min, int max) {
+    private void fusion() {
         int[] fu = new int[max - min + 1];
         int milieu = (max + min) / 2;
         int cur1 = min;
@@ -77,30 +95,18 @@ public class TriSequentiel {
         }
     }
 
-    public static boolean testTrie(int[] tab) {
-        boolean res = true;
-        int i = 0;
-        while (res && i < tab.length - 1) {
-            res = tab[i] <= tab[i + 1];
-            i++;
-        }
-        return res;
-    }
-
-    public static int[] tabAlea(int size, int borneMax) {
-        int[] res = new int[size];
-        for (int i = 0; i < res.length; i++) {
-            res[i] = (int) (Math.random() * borneMax);
-        }
-        return res;
-    }
-
     public static void test(int size,int bmax) {
         int[] t = TriSequentiel.tabAlea(size,bmax);
         System.out.println("trie tableau taille : " + size
                 + " (0 <= e < " + bmax + ")");
         long deb = System.currentTimeMillis();
-        tri(t);
+        TriParallele tp = new TriParallele(t, 0, t.length - 1);
+        tp.start();
+        try {
+            tp.join();
+        } catch (InterruptedException ex) {
+            throw new Error("ne doit pas arriver");
+        }
         long duree = System.currentTimeMillis() - deb;
         System.out.println("test : " + TriSequentiel.testTrie(t));
         System.out.println("in " + duree + " ms");
@@ -108,7 +114,7 @@ public class TriSequentiel {
     }
 
     public static void main(String[] args) {
-        test(10000000,TriSequentiel.BMAX);
+        test(100000,TriSequentiel.BMAX);
     }
 
 }

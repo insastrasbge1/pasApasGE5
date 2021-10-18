@@ -21,7 +21,9 @@ package fr.insa.beuvron.cours.multiTache.exemplesCours.trie;
 import java.util.Arrays;
 
 /**
- *
+ * Le tri à bulle. Très connu, mais moins efficace que le tri par division-fusion.
+ * Redonné ici pour voir son inéficacité quand le nombre de cases à trier devient
+ * grand.
  * @author francois
  */
 public class TriSequentielBulle {
@@ -52,7 +54,7 @@ public class TriSequentielBulle {
     }
 
     public static void main(String[] args) {
-        test(TriSequentiel.SIZE,TriSequentiel.BMAX);
+        test(100000,TriSequentiel.BMAX);
     }
 
 }

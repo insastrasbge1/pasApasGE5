@@ -4,6 +4,7 @@
  */
 package fr.insa.beuvron.cours.multiTache.sockets.chat;
 
+import fr.insa.beuvron.cours.multiTache.sockets.INetAdressUtil;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -27,8 +28,39 @@ import java.util.logging.Logger;
  */
 public class Server {
 
-    public List<GestionnaireClient> clients = new ArrayList<>();
-    public LinkedList<String> toSendAll = new LinkedList<>();
+    private List<GestionnaireClient> clients = new ArrayList<>();
+    private LinkedList<String> toSendAll = new LinkedList<>();
+
+    private boolean[] serverReady = new boolean[]{false};
+
+    private InetAddress hostToConnect;
+    private int portToConnect;
+
+    public InetAddress waitForInetAddress() {
+        synchronized (this.serverReady) {
+            while (!this.serverReady[0]) {
+                try {
+                    this.serverReady.wait();
+                } catch (InterruptedException ex) {
+                    throw new Error("no interrupt", ex);
+                }
+            }
+            return this.hostToConnect;
+        }
+    }
+
+    public int waitForPort() {
+        synchronized (this.serverReady) {
+            while (!this.serverReady[0]) {
+                try {
+                    this.serverReady.wait();
+                } catch (InterruptedException ex) {
+                    throw new Error("no interrupt", ex);
+                }
+            }
+            return this.portToConnect;
+        }
+    }
 
     public void start() {
         Connection connect = this.new Connection();
@@ -43,17 +75,23 @@ public class Server {
         public void run() {
 
             try {
-//                Inet4Address adr = INetAdressUtil.
-//                        premiereAdresseNonLoopback();
-//                int port = 0;
-                InetAddress adr = Inet4Address.getByName("192.168.56.1");
-                int port = 49627;
+                Inet4Address adr = INetAdressUtil.
+                        premiereAdresseNonLoopback();
+                int port = 0;
+//                InetAddress adr = Inet4Address.getByName("192.168.56.1");
+//                int port = 49627;
                 ServerSocket ss = new ServerSocket(port, 10, adr);
+                synchronized (serverReady) {
+                    hostToConnect = ss.getInetAddress();
+                    portToConnect = ss.getLocalPort();
+                    serverReady[0] = true;
+                    serverReady.notifyAll();
+                }
                 System.out.println("server running");
                 System.out.println("host : " + ss.getInetAddress());
                 System.out.println("port : " + ss.getLocalPort());
-                // pbPaP
 
+                // pbPaP
                 while (true) {
                     Socket soc = ss.accept();
                     System.out.println("nouveau client : " + soc);
@@ -128,8 +166,8 @@ public class Server {
                     while ((nextLine = bin.readLine()) != null) {
                         System.out.println("message recu from Client " + getNom() + " : " + nextLine);
                         synchronized (toSendAll) {
-                            toSendAll.add(getNom() + " : " +nextLine);
-                            System.out.println("GestionnaireClient "+getNom() + " notifyAll sur toSendAll");
+                            toSendAll.add(getNom() + " : " + nextLine);
+                            System.out.println("GestionnaireClient " + getNom() + " notifyAll sur toSendAll");
                             toSendAll.notifyAll();
                         }
 
@@ -180,7 +218,7 @@ public class Server {
                     }
 
                 } catch (IOException ex) {
-                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new Error(ex);
                 }
             }
         }

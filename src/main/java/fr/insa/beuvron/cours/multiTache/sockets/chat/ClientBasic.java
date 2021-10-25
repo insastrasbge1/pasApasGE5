@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author francois
  */
-public class Client {
+public class ClientBasic {
 
     private Socket socketClient;
 
@@ -76,7 +76,7 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        Client c = new Client();
+        ClientBasic c = new ClientBasic();
         c.start();
     }
 }
